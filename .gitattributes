@@ -1,0 +1,39 @@
+# Git Line Ending Configuration
+
+# Auto detect text files and normalize to LF in repository
+* text=auto
+
+# Shell scripts should always use LF (Unix line endings)
+*.sh text eol=lf
+
+# Batch files should always use CRLF (Windows line endings)
+*.bat text eol=crlf
+
+# Template files should preserve LF
+*.template text eol=lf
+
+# Python files
+*.py text eol=lf
+
+# Markdown files
+*.md text eol=lf
+
+# YAML files
+*.yaml text eol=lf
+*.yml text eol=lf
+
+# JSON files
+*.json text eol=lf
+
+# HTML/CSS/JS files
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+
+# Binary files (don't modify)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary

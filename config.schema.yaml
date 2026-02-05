@@ -1,0 +1,197 @@
+# API Migration Orchestrator - Configuration Schema
+# This file defines the structure and validation rules for developer configurations
+
+type: object
+required:
+  - owner
+  - discovery
+  - gloo
+  - migration
+
+properties:
+  owner:
+    type: object
+    description: "API ownership metadata for this developer/team"
+    required:
+      - team
+      - domain
+    properties:
+      team:
+        type: string
+        description: "Team name (e.g., 'payments-team', 'checkout-team')"
+        pattern: "^[a-z0-9-]+$"
+      domain:
+        type: string
+        description: "Domain or business area (e.g., 'payment-services', 'customer-services')"
+        pattern: "^[a-z0-9-]+$"
+      contact:
+        type: string
+        description: "Team contact email"
+        format: email
+      component:
+        type: string
+        description: "Optional component/module name"
+
+  discovery:
+    type: object
+    description: "Selective discovery controls per platform"
+    properties:
+      apic:
+        $ref: "#/definitions/platform_discovery"
+      mulesoft:
+        $ref: "#/definitions/platform_discovery"
+      kafka:
+        $ref: "#/definitions/kafka_discovery"
+      swagger:
+        $ref: "#/definitions/platform_discovery"
+
+  gloo:
+    type: object
+    description: "Gloo Gateway and Portal configuration"
+    required:
+      - gateway
+      - portal
+    properties:
+      gateway:
+        type: object
+        required:
+          - namespace
+        properties:
+          namespace:
+            type: string
+            description: "Kubernetes namespace for Gloo Gateway resources"
+          cluster:
+            type: string
+            description: "Kubernetes cluster name/context"
+      portal:
+        type: object
+        properties:
+          url:
+            type: string
+            format: uri
+            description: "Gloo Portal URL"
+
+  migration:
+    type: object
+    description: "Migration execution settings"
+    properties:
+      traffic_shifting:
+        type: object
+        properties:
+          phases:
+            type: array
+            description: "Traffic shift percentages (e.g., [5, 25, 50, 100])"
+            items:
+              type: integer
+              minimum: 0
+              maximum: 100
+            default: [5, 25, 50, 100]
+          approval_required:
+            type: boolean
+            default: true
+      rollback:
+        type: object
+        properties:
+          error_threshold:
+            type: number
+            description: "Error rate threshold for automatic rollback (0.0-1.0)"
+            minimum: 0
+            maximum: 1
+            default: 0.05
+          latency_threshold_ms:
+            type: integer
+            description: "Latency threshold for rollback (milliseconds)"
+            default: 2000
+
+  database:
+    type: object
+    description: "Database connection settings"
+    properties:
+      url:
+        type: string
+        description: "PostgreSQL connection URL"
+        default: "postgresql://localhost:5432/api_migration"
+
+  redis:
+    type: object
+    description: "Redis connection for caching and distributed locking"
+    properties:
+      url:
+        type: string
+        description: "Redis connection URL"
+        default: "redis://localhost:6379/0"
+
+definitions:
+  platform_discovery:
+    type: object
+    properties:
+      enabled:
+        type: boolean
+        description: "Enable/disable discovery for this platform"
+        default: false
+      credentials:
+        type: object
+        description: "Platform-specific credentials (store in environment variables)"
+        properties:
+          url:
+            type: string
+            format: uri
+          username:
+            type: string
+          password:
+            type: string
+          token:
+            type: string
+      filters:
+        type: array
+        description: "API filters (glob patterns, regex, tags)"
+        items:
+          type: string
+        examples:
+          - "payment-*"
+          - "checkout-api-*"
+          - "^/api/v2/orders.*"
+      exclude_patterns:
+        type: array
+        description: "Patterns to exclude from discovery"
+        items:
+          type: string
+      tags:
+        type: array
+        description: "Filter by API tags"
+        items:
+          type: string
+      rate_limit:
+        type: object
+        description: "Rate limiting for API calls during discovery"
+        properties:
+          max_requests_per_second:
+            type: integer
+            default: 10
+
+  kafka_discovery:
+    type: object
+    properties:
+      enabled:
+        type: boolean
+        default: false
+      credentials:
+        type: object
+        properties:
+          bootstrap_servers:
+            type: array
+            items:
+              type: string
+          security_protocol:
+            type: string
+            enum: ["PLAINTEXT", "SSL", "SASL_PLAINTEXT", "SASL_SSL"]
+      topics:
+        type: array
+        description: "Topic patterns to discover"
+        items:
+          type: string
+      consumer_groups:
+        type: array
+        description: "Consumer group patterns"
+        items:
+          type: string

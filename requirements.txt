@@ -1,0 +1,29 @@
+# Core dependencies
+pydantic>=2.0.0
+pyyaml>=6.0
+python-dotenv>=1.0.0
+
+# Database
+asyncpg>=0.29.0
+psycopg2-binary>=2.9.9
+redis>=5.0.0
+
+# Web Framework
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.6
+
+# Async processing
+celery>=5.3.0
+
+# CLI
+click>=8.1.0
+rich>=13.0.0
+tqdm>=4.66.0
+
+# API clients
+requests>=2.31.0
+tenacity>=8.2.0
+
+# OpenAPI
+openapi-spec-validator>=0.7.0

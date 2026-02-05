@@ -1,0 +1,18 @@
+apiVersion: portal.gloo.solo.io/v1beta1
+kind: Portal
+metadata:
+  name: production-portal
+  namespace: gloo-portal
+  labels:
+    apic-catalog: production
+spec:
+  displayName: Production API Portal
+  description: Production APIs for external partners
+  domains:
+  - portal.company.com
+  publishedApiProducts:
+  - name: customer-apis
+    namespace: gloo-portal
+  banner:
+    fetchUrl: https://company.com/logo.png
+  primaryColor: '#0033A0'

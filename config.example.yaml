@@ -1,0 +1,127 @@
+# API Migration Orchestrator - Example Configuration
+# Copy this file to config.yaml and customize for your team/domain
+
+# ============================================================
+# OWNERSHIP METADATA
+# ============================================================
+owner:
+  team: "payments-team" # Your team name
+  domain: "payment-services" # Your domain/business area
+  contact: "payments-team@company.com" # Team contact email
+  component: "checkout" # Optional: specific component
+
+# ============================================================
+# SELECTIVE DISCOVERY CONTROLS
+# ============================================================
+discovery:
+  # IBM API Connect (APIC)
+  apic:
+    enabled: true
+    credentials:
+      url: "https://apic.company.com"
+      username: "${APIC_USERNAME}" # Set via environment variable
+      password: "${APIC_PASSWORD}"
+    filters:
+      - "payment-*" # Discover APIs starting with "payment-"
+      - "checkout-*" # Discover APIs starting with "checkout-"
+      - "*-payment-gateway" # Discover APIs ending with "-payment-gateway"
+    exclude_patterns:
+      - "*-internal-*" # Exclude internal APIs
+      - "*-deprecated-*" # Exclude deprecated APIs
+    tags:
+      - "payment"
+      - "checkout"
+    rate_limit:
+      max_requests_per_second: 10 # Avoid overwhelming APIC
+
+  # MuleSoft Anypoint Platform
+  mulesoft:
+    enabled: true
+    credentials:
+      url: "https://anypoint.mulesoft.com"
+      username: "${MULESOFT_USERNAME}"
+      password: "${MULESOFT_PASSWORD}"
+    filters:
+      - "Payment*" # MuleSoft API name patterns
+      - "Checkout*"
+    tags:
+      - "payment-domain"
+
+  # Apache Kafka
+  kafka:
+    enabled: true
+    credentials:
+      bootstrap_servers:
+        - "kafka-1.company.com:9092"
+        - "kafka-2.company.com:9092"
+      security_protocol: "SASL_SSL"
+    topics:
+      - "payment.events.*" # Discover topics matching pattern
+      - "checkout.transactions.*"
+      - "payment.notifications.*"
+    consumer_groups:
+      - "payment-*"
+
+  # Swagger/OpenAPI Specs
+  swagger:
+    enabled: true
+    credentials:
+      url: "https://api-docs.company.com"
+      token: "${SWAGGER_API_TOKEN}"
+    filters:
+      - "/payment-api/*"
+      - "/checkout-api/*"
+
+# ============================================================
+# GLOO GATEWAY & PORTAL CONFIGURATION
+# ============================================================
+gloo:
+  gateway:
+    namespace: "gloo-system" # Kubernetes namespace
+    cluster: "production-cluster" # K8s cluster context
+  portal:
+    url: "https://portal.gloo.company.com"
+
+# ============================================================
+# MIGRATION EXECUTION SETTINGS
+# ============================================================
+migration:
+  traffic_shifting:
+    phases: [5, 25, 50, 100] # Traffic shift percentages
+    approval_required: true # Require human approval per phase
+
+  rollback:
+    error_threshold: 0.05 # Auto-rollback if error rate > 5%
+    latency_threshold_ms: 2000 # Auto-rollback if p95 latency > 2s
+
+# ============================================================
+# DATABASE & CACHE
+# ============================================================
+database:
+  url: "${DATABASE_URL}" # PostgreSQL connection URL
+  # Example: postgresql://user:pass@localhost:5432/api_migration
+
+redis:
+  url: "${REDIS_URL}" # Redis connection URL
+  # Example: redis://localhost:6379/0
+
+# ============================================================
+# LOGGING & OBSERVABILITY
+# ============================================================
+logging:
+  level: "INFO" # DEBUG, INFO, WARNING, ERROR
+  format: "json" # json or text
+  correlation_id: true # Add correlation IDs to all logs
+
+# ============================================================
+# NOTIFICATION CHANNELS
+# ============================================================
+notifications:
+  slack:
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#payment-team-migrations"
+  email:
+    smtp_server: "smtp.company.com"
+    from: "api-migration@company.com"
+    to:
+      - "payments-team@company.com"

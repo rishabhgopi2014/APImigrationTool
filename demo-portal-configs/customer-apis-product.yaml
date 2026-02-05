@@ -1,0 +1,35 @@
+apiVersion: portal.gloo.solo.io/v1beta1
+kind: APIProduct
+metadata:
+  name: customer-apis
+  namespace: gloo-portal
+  labels:
+    apic-catalog: production
+    apic-collection: customer-apis
+spec:
+  displayName: Customer APIs
+  description: APIs for customer management
+  apis:
+  - apiRef:
+      name: customer-preferences-api-vs
+      namespace: gloo-system
+  - apiRef:
+      name: customer-profile-api-vs
+      namespace: gloo-system
+  usagePlans:
+  - name: gold
+    displayName: Gold
+    description: Gold plan with 10000/day requests
+    rateLimit:
+      requestsPerUnit: 10000
+      unit: DAY
+    authPolicy:
+      apiKey: {}
+  - name: silver
+    displayName: Silver
+    description: Silver plan with 1000/day requests
+    rateLimit:
+      requestsPerUnit: 1000
+      unit: DAY
+    authPolicy:
+      apiKey: {}

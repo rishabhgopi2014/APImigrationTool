@@ -1,0 +1,13 @@
+[project]
+name = "api-migration-orchestrator"
+version = "1.0.0"
+description = "Enterprise-scale API migration tool for Gloo Gateway"
+authors = [{name = "API Platform Team"}]
+requires-python = ">=3.9"
+
+[project.scripts]
+api-migrate = "src.cli.main:cli"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
