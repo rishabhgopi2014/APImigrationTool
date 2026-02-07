@@ -351,12 +351,6 @@ migration:
 python -m src.cli deploy --api payment-gateway-api --dry-run
 ```
 
-## 🤝 Support
-
-- **Slack**: #api-migration-support
-- **Email**: api-platform-team@company.com
-- **Issues**: Internal JIRA project
-
 ## 📄 License
 
 Internal use only - Company Proprietary
